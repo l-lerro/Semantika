@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+   <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Meta Tags -->
+    <title>Semantika - Gioco di Parole Quotidiano</title>
+    <meta name="description" content="Trova la parola segreta del giorno usando la semantica!">
+    <meta name="keywords" content="gioco di parole, semantica, AI, italiano, wordle, contexto">
+    <meta name="author" content="ReturnOH">
+        
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-32-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon-16-16.png">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#667eea">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="headerinfo">
+    </div>
+
+    <div class="container">
+        <h1>🎯 Semantika</h1>
+        <p class="subtitle">Trova la parola segreta di oggi.</p>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="attempts">0</div>
+                <div class="stat-label">Tentativi</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="best-rank">-</div>
+                <div class="stat-label">Migliore</div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Scrivi una parola..." autocomplete="off">
+            <button id="submit-btn">Invia</button>
+        </div>
+
+        <div id="guesses-list"></div>
+    </div>
+
+    <div class="info">
+            <div id="tutorial-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close" data-modal="tutorial-modal">&times;</span>
+                    <h2>🎓 Come si gioca</h2>
+                    <div class="modal-body">
+                        <p class="intro-text">Trova la parola segreta usando la <strong>semantica</strong>!</p>
+                        
+                        <div class="instruction">
+                            <div class="instruction-icon">💭</div>
+                            <div class="instruction-text">
+                                <h3>Cos'è la semantica?</h3>
+                                <p>Due parole sono <em>semanticamente vicine</em> quando hanno significati simili o appaiono in contesti correlati.</p>
+                            </div>
+                        </div>
+
+                        <div class="instruction">
+                            <div class="instruction-icon">🎯</div>
+                            <div class="instruction-text">
+                                <h3>Obiettivo</h3>
+                                <p>Ogni giorno c'è una nuova parola segreta. Prova a indovinarla avvicinandoti parola dopo parola!</p>
+                            </div>
+                        </div>
+
+                        <div class="instruction">
+                            <div class="instruction-icon">🌡️</div>
+                            <div class="instruction-text">
+                                <h3>Feedback</h3>
+                                <p>Riceverai un <strong>posizione</strong> che indica quanto la tua parola è simile semanticamente alla soluzione:</p>
+                                <ul>
+                                    <li><span class="temp-badge burning">🔥 Pos: 1-50</span> Ci sei quasi!</li>
+                                    <li><span class="temp-badge hot">🌶️ Pos: 51-150</span> Buona direzione</li>
+                                    <li><span class="temp-badge warm">☀️ Pos: 151-450</span> Sulla strada giusta</li>
+                                    <li><span class="temp-badge cool">🌤️ Pos: 451-900</span> Ancora lontano</li>
+                                    <li><span class="temp-badge cold">❄️ Pos: 901-1200</span> Cambia strategia</li>
+                                    <li><span class="temp-badge frozen">🧊 Pos: 1200+</span> Completamente fuori strada</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="instruction">
+                            <div class="instruction-icon">💡</div>
+                            <div class="instruction-text">
+                                <h3>Esempio</h3>
+                                <p>Se la parola segreta è <strong>"montagna"</strong>:</p>
+                                <ul>
+                                    <li>✅ "roccia" → Pos: 10 🔥</li>
+                                    <li>✅ "fiume" → Pos: 13 🔥</li>
+                                    <li>⚠️ "vacanza" → Pos: 417 🌤️</li>
+                                    <li>❌ "computer" → Pos: 1450 🧊</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="instruction highlight">
+                            <div class="instruction-icon">🤖</div>
+                            <div class="instruction-text">
+                                <h3>Sviluppo</h3>
+                                <p>Il gioco usa <strong>AI embeddings</strong> per calcolare la vicinanza semantica. A volte i risultati possono essere poco precisi!</p>
+                                <p>Il dizionario è in continua evoluzione: diverse parole italiane potrebbero non essere presenti.</p>
+                                <p><strong>Il sito è attualmente in fase di sviluppo!</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>

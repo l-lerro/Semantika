@@ -10,17 +10,29 @@ const listContainer = document.getElementById('guesses-list');
 const attemptsEl = document.getElementById('attempts');
 const bestRankEl = document.getElementById('best-rank');
 const infoDiv = document.querySelector('.info');
+const surrenderBtn = document.getElementById('surrender-btn');
+const hintBtn = document.getElementById('hint-btn');
 
 // Game state
 let attempts = 0;
 let bestRank = Infinity;
 let guessedWords = new Set();
+let hintsUsed = 0;
+const MAX_HINTS = 30; // Rimuovi
 
-// Eventi
+// Ascolto Eventi
 submitBtn.addEventListener('click', playTurn);
 inputField.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') playTurn();
 });
+
+if(surrenderBtn) {
+    surrenderBtn.addEventListener('click', surrender);
+}
+
+if(hintBtn) {
+    hintBtn.addEventListener('click', getHint);
+}
 
 
 // Main
@@ -31,6 +43,7 @@ async function playTurn() {
 
     if (guessedWords.has(word)) {
         inputField.value = '';
+        triggerShake(inputField);
         return;
     }
 
@@ -46,6 +59,8 @@ async function playTurn() {
 
         if (data.length === 0) {
             // TODO - Aggiungi parola non nel dizionario
+            // TODO - aggiungi animazione errore
+            triggerShake(inputField);
         } else {
             const result = data[0];
             
@@ -71,6 +86,7 @@ async function playTurn() {
                     //TO DO salva sessione
                 }, 500);
             }
+
         }
     } catch (err) {
         console.error('Errore:', err);
@@ -146,10 +162,103 @@ function addResultToScreen(result) {
             </div>
         `;
         //DONE - Rimosso result.label
+
     }
 
 
     listContainer.prepend(row);
+}
+
+async function surrender() {
+
+    try {
+        const { data, error } = await _supabase.rpc('get_daily_word');
+        
+        if (error) throw error;
+
+        const secretWord = data;
+        
+        const row = document.createElement('div');
+        row.className = 'guess-row surrender';
+        row.innerHTML = `
+            <div class="word-container">
+                <span class="emoji">🏳️</span>
+                <strong style="font-size: 1.4rem;">${secretWord.toUpperCase()}</strong>
+            </div>
+            <div class="rank-container">
+                <span class="rank-label">Ti sei arreso</span>
+            </div>
+        `;
+        listContainer.prepend(row);
+   
+        inputField.disabled = true;
+        submitBtn.disabled = true;
+        hintBtn.disabled = true;
+        surrenderBtn.disabled = true;
+        
+    } catch (err) {
+        console.error('Errore:', err);
+        alert('Errore nel recupero della parola segreta!');
+    }
+}
+
+async function getHint() {
+    hintBtn.disabled = true;
+    
+    let currentBest = bestRank;
+
+    if (currentBest === Infinity || currentBest > 2000) {
+        currentBest = 1000; 
+    }
+
+    let targetRank = Math.floor(currentBest / 2);
+
+    if (targetRank < 2) targetRank = 2;
+
+
+    if (currentBest <= 2) {
+        return;
+    }
+
+    try {
+
+        const { data, error } = await _supabase.rpc('get_hint', { 
+            target_rank: targetRank 
+        });
+        
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+            const hint = data[0];
+
+            hintsUsed++;
+            hintBtn.textContent = `💡 Aiuto (${30 - hintsUsed})`;
+
+            inputField.value = hint.word;
+            await playTurn();
+
+            if (hintsUsed < 30) hintBtn.disabled = false;
+
+        } else {
+            alert("Nessun indizio trovato per questo livello.");
+            hintBtn.disabled = false;
+        }
+        
+    } catch (err) {
+        console.error('Errore:', err);
+        alert('Errore connessione!');
+        hintBtn.disabled = false;
+    }
+}
+
+function triggerShake(element) {
+    element.classList.remove('shake');
+    void element.offsetWidth; 
+    element.classList.add('shake');
+
+    setTimeout(() => {
+        element.classList.remove('shake');
+    }, 500);
 }
 
 

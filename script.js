@@ -18,7 +18,7 @@ let attempts = 0;
 let bestRank = Infinity;
 let guessedWords = new Set();
 let hintsUsed = 0;
-const MAX_HINTS = 30; // Rimuovi
+const MAX_HINTS = 3; // Rimuovi
 
 // Ascolto Eventi
 submitBtn.addEventListener('click', playTurn);
@@ -141,6 +141,8 @@ function addResultToScreen(result) {
 
     if (result.rank === 1) {
         // Caso vittoria
+        // Surrender button off
+        surrenderBtn.disabled = true;
         row.innerHTML = `
             <div class="word-container">
                 <span class="emoji">${temp.emoji}</span>
@@ -170,6 +172,7 @@ function addResultToScreen(result) {
 }
 
 async function surrender() {
+
 
     try {
         const { data, error } = await _supabase.rpc('get_daily_word');

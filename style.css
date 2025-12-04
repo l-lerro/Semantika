@@ -337,29 +337,56 @@ button:disabled {
 }
 
 /* Responsive TODO TEST MOBILE */
+/* --- MEDIA QUERY PER MOBILE --- */
 @media (max-width: 600px) {
+    
+    body {
+        padding: 15px;
+        padding-top: 30px;
+    }
+
     .container {
+        width: 100%;
+        max-width: 100%;
         padding: 1.5rem;
+        border-radius: 15px;
     }
 
     h1 {
         font-size: 2rem;
+        margin-bottom: 0.2rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
     }
 
     .input-area {
-        flex-direction: column;
+        flex-direction: row;
+    }
+
+    input {
+        padding: 12px;
+        font-size: 16px;
     }
 
     button {
-        width: 100%;
+        padding: 12px 20px;
+        font-size: 16px;
     }
-
+    
+    .helper-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .guess-row {
+        padding: 12px 15px;
+    }
+    
     .word-container {
         font-size: 1rem;
-    }
-
-    .emoji {
-        font-size: 1.5rem;
     }
 }
 

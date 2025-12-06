@@ -18,6 +18,7 @@ let attempts = 0;
 let bestRank = Infinity;
 let guessedWords = new Set();
 let hintsUsed = 0;
+let attemptsHistory = [];
 const MAX_HINTS = 3; // Rimuovi
 
 // Ascolto Eventi
@@ -67,6 +68,8 @@ async function playTurn() {
             guessedWords.add(word);
             attempts++;
 
+            attemptsHistory.push(result);
+
             if (attempts === 1) {
                 const infoDiv = document.querySelector('.info');
                 if (infoDiv) {
@@ -79,7 +82,7 @@ async function playTurn() {
             }
 
             updateStats();
-            addResultToScreen(result);
+            renderList();
 
             if (result.rank === 1) {
                 setTimeout(() => {
@@ -132,16 +135,14 @@ function getTempCategory(rank, totalCandidates = 1485) {
     return { class: 'frozen', emoji: '🧊', label: 'Gelido' };
 }
 
-
-function addResultToScreen(result) {
+function createGuessRow(result, isLatest = false) {
     const row = document.createElement('div');
     const temp = getTempCategory(result.rank);
-    
-    row.className = `guess-row ${temp.class}`;
+
+    const extraClass = isLatest ? 'latest-guess' : '';
+    row.className = `guess-row ${temp.class} ${extraClass}`;
 
     if (result.rank === 1) {
-        // Caso vittoria
-        // Surrender button off
         surrenderBtn.disabled = true;
         row.innerHTML = `
             <div class="word-container">
@@ -153,7 +154,6 @@ function addResultToScreen(result) {
             </div>
         `;
     } else {
-        // Caso normale
         row.innerHTML = `
             <div class="word-container">
                 <span class="emoji">${temp.emoji}</span>
@@ -163,13 +163,26 @@ function addResultToScreen(result) {
                 <span class="rank">Pos: ${result.rank}</span>
             </div>
         `;
-        //DONE - Rimosso result.label
-
     }
-
-
-    listContainer.prepend(row);
+    return row;
 }
+
+function renderList() {
+    listContainer.innerHTML = '';
+
+    if (attemptsHistory.length === 0) return;
+    const latest = attemptsHistory[attemptsHistory.length - 1];
+    const history = attemptsHistory.slice(0, attemptsHistory.length - 1);
+
+    history.sort((a, b) => a.rank - b.rank);
+
+    listContainer.appendChild(createGuessRow(latest, true));
+
+    history.forEach(item => {
+        listContainer.appendChild(createGuessRow(item, false));
+    });
+}
+
 
 async function surrender() {
 
@@ -235,12 +248,12 @@ async function getHint() {
             const hint = data[0];
 
             hintsUsed++;
-            hintBtn.textContent = `💡 Aiuto (${30 - hintsUsed})`;
+            hintBtn.textContent = `💡 Aiuto (${3 - hintsUsed})`;
 
             inputField.value = hint.word;
             await playTurn();
 
-            if (hintsUsed < 30) hintBtn.disabled = false;
+            if (hintsUsed < 3) hintBtn.disabled = false;
 
         } else {
             alert("Nessun indizio trovato per questo livello.");

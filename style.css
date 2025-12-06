@@ -336,6 +336,11 @@ button:disabled {
     50% { transform: scale(1.05); }
 }
 
+.guess-row.latest-guess {
+    margin-bottom: 30px;
+}
+
+
 /* Responsive TODO TEST MOBILE */
 /* --- MEDIA QUERY PER MOBILE --- */
 @media (max-width: 600px) {
